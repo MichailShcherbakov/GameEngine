@@ -46,20 +46,23 @@ public:
 	virtual void RunCoreLoop() override;
 	virtual std::string GetRootDir() override;
 	virtual void LoadEngineModules(const IInitializeParams& params) override;
+	virtual void EngineEvent(const EEngineEvent& event) override;
 	// ~IUnknownModule
 
 public:
 	void ReleaseLoadedEngineModules();
 
 private:
-	Modules m_moduels;
+	Modules m_modules;
 	IConsole* m_console;
 	IInitializeParams m_pInitializeParams;
 
 private:
-	std::vector<std::string> libs = {
+	std::vector<std::string> libs = 
+	{
+		"Engine.GLFW",
 		"Engine.RenderVulkan",
-		"Engine.RenderOpengl"
+		"Engine.RenderOpengl",
 	};
 
 private:

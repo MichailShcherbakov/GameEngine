@@ -6,6 +6,7 @@
 
 struct ICoreModule;
 struct ILogSystem;
+struct ISurface;
 
 #ifdef _WIN32
 #define USE_PLATFORM_WINDOWS	
@@ -105,6 +106,7 @@ struct ICoreGlobalVariable
 {
 	ICoreModule* pCore = nullptr;
 	ILogSystem* pLogSystem = nullptr;
+	ISurface* pSurface = nullptr;
 };
 
 struct IInitializeParams

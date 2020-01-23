@@ -4,13 +4,6 @@
 #include <EventSystem/IHandler.h>
 #include <EventSystem/IEvent.h>
 
-#define MAKE_EVENT(name, ...) \
-protected: \
-	Event<__VA_ARGS__> m_##name; \
-events: \
-	IEvent<__VA_ARGS__>& name = m_##name;
-
-
 template<typename... Args>
 class Event : public IEvent<Args...>
 {
@@ -75,6 +68,13 @@ IHandler<Args...>& CreateEventHadnler(Class& object, void(Class::* method)(Args.
 {
 	return *new EventHandler<Class, Args...>(object, method);
 }
+
+#define MAKE_EVENT(name, ...) \
+protected: \
+	Event<__VA_ARGS__> m_##name; \
+events: \
+	IEvent<__VA_ARGS__>& name = m_##name; \
+
 
 #define LISTENER(class, method) CreateEventHadnler(class, &method);
 

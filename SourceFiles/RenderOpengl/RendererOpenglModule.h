@@ -16,6 +16,7 @@ public:
 	virtual void Release() override;
 	virtual const char* GetModuleName() { return "Engine.RenderOpengl"; }
 	virtual void RegisterEngineModule(const IInitializeParams& params)  override;
+	virtual void OnEngineEvent(const EEngineEvent& event) override;
 	// ~IEngineModule
 };
 

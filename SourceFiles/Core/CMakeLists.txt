@@ -48,8 +48,7 @@ target_include_directories(${PROJECT_NAME} PUBLIC
 target_include_directories(${PROJECT_NAME} PUBLIC 
 	${ENGINE_ROOT}/SourceFiles/SDK/glm/Include 
 	${ENGINE_ROOT}/SourceFiles/SDK/stb/Include 
-	${ENGINE_ROOT}/SourceFiles/SDK/boost/Include 
-	${ENGINE_ROOT}/SourceFiles/SDK/rlutil/Include 
+	${ENGINE_ROOT}/SourceFiles/SDK/boost/Include
 	${ENGINE_ROOT}/SourceFiles/SDK/vulkan/Include 
 )
 

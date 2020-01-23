@@ -11,6 +11,6 @@
 #define _LogError(...) gEngine->pLogSystem->LogError(MODULE_TITILE __VA_ARGS__);
 #define _LogSuccess(...) gEngine->pLogSystem->LogSuccess(MODULE_TITILE __VA_ARGS__);
 
-#define FATAL_ERROR(x) { RadMessageBox("FATAL ERROR", x, eBT_Error); }
+#define FATAL_ERROR(x) { Message("FATAL ERROR", x, EMessageBoxType::Error); }
 
 #endif // _CORE_STDAFX_H_

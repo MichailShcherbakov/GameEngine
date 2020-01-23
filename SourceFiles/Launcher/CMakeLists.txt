@@ -19,16 +19,5 @@ target_include_directories(${PROJECT_NAME} PUBLIC
 )
 
 target_include_directories(${PROJECT_NAME} PUBLIC 
-	${ENGINE_ROOT}/SourceFiles/SDK/glwf/Include 
 	${ENGINE_ROOT}/SourceFiles/SDK/glm/Include 
-)
-
-if ("${CMAKE_GENERATOR_PLATFORM}" STREQUAL "x64")
-    target_link_directories(${PROJECT_NAME} PUBLIC ${ENGINE_ROOT}/SourceFiles/SDK/glwf/Lib)
-elseif ("${CMAKE_GENERATOR_PLATFORM}" STREQUAL "x32")
-	target_link_directories(${PROJECT_NAME} PUBLIC ${ENGINE_ROOT}/SourceFiles/SDK/glwf/Lib32)
-endif()
-
-target_link_libraries(${PROJECT_NAME} PUBLIC 
-	glfw3.lib
 )

@@ -11,7 +11,6 @@
 #include <Windows.h>
 
 #include <boost/filesystem.hpp>
-#include <rlutil.h>
 
 LogSystem::LogSystem()
 {

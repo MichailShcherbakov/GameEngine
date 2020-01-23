@@ -12,7 +12,7 @@
 
 #if WIN32
 	#include <Windows.h>
-	#include "vulkan/vulkan_win32.h"
+	#include <vulkan/vulkan_win32.h>
 #endif
 
 namespace EngineRenderers
@@ -23,7 +23,7 @@ namespace EngineRenderers
 		{
 		public:
 #if WIN32
-			Renderer(HINSTANCE hInstance, HWND hwnd);
+			//Renderer(HINSTANCE hInstance, HWND hwnd);
 #endif // WIN32
 			~Renderer();
 
@@ -171,13 +171,13 @@ namespace EngineRenderers
 
 		private:
 			/*VkInstance m_instance;
-			static VkSurfaceKHR m_surface;
-			static VkRenderPass m_renderPass;
-			static VkPipelineLayout m_pipelineLayout;
-			static VkPipeline m_graphicsPipeline;
-			static VkDebugUtilsMessengerEXT m_debugUtilsMessengerEXT;
-			static Render::Swapchain m_swapchain;
-			static Render::Device m_device;*/
+			VkSurfaceKHR m_surface;
+			VkRenderPass m_renderPass;
+			VkPipelineLayout m_pipelineLayout;
+			VkPipeline m_graphicsPipeline;
+			VkDebugUtilsMessengerEXT m_debugUtilsMessengerEXT;
+			Render::Swapchain m_swapchain;
+			Render::Device m_device;*/
 		};
 	}
 }

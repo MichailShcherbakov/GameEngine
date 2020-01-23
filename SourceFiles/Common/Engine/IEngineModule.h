@@ -14,6 +14,7 @@ struct IEngineModule
 	virtual void Release() = 0;
 	virtual const char* GetModuleName() = 0;
 	virtual void RegisterEngineModule(const IInitializeParams& params) = 0;
+	virtual void OnEngineEvent(const EEngineEvent& event) = 0;
 };
 
 #endif // _I_ENGINE_MODULE_H_

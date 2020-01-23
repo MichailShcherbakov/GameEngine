@@ -7,13 +7,14 @@
 #include "boost/filesystem.hpp"
 #include "Graphics/Mesh/Mesh.h"
 
-EngineRenderers::Vulkan::Renderer::Renderer(HINSTANCE hInstance, HWND hwnd)
+/*EngineRenderers::Vulkan::Renderer::Renderer(HINSTANCE hInstance, HWND hwnd)
 {
-	/*m_instance = InitInstance(
+	m_instance = InitInstance(
 		"Union",
 		"UnionEngine",
 		{ "VK_LAYER_LUNARG_standard_validation" },
-		{ VK_KHR_SURFACE_EXTENSION_NAME, VK_KHR_WIN32_SURFACE_EXTENSION_NAME, VK_EXT_DEBUG_UTILS_EXTENSION_NAME }
+		{ VK_KHR_SURFACE_EXTENSION_NAME, VK_KHR_WIN32_SURFACE_EXTENSION_NAME, VK_EXT_DEBUG_UTILS_EXTENSION_NAME },
+		m_debugUtilsMessengerEXT
 	);
 
 #if WIN32
@@ -43,9 +44,9 @@ EngineRenderers::Vulkan::Renderer::Renderer(HINSTANCE hInstance, HWND hwnd)
 		1
 	);
 
-	m_graphicsPipeline = InitGraphicsPipeline(m_device, m_swapchain, m_pipelineLayout, m_renderPass);*/
+	m_graphicsPipeline = InitGraphicsPipeline(m_device, m_swapchain, m_pipelineLayout, m_renderPass);
 }
-
+*/
 EngineRenderers::Vulkan::Renderer::~Renderer()
 {
 	/*DeinitGraphicsPipeline(m_graphicsPipeline, m_device);
@@ -60,7 +61,7 @@ EngineRenderers::Vulkan::Renderer::~Renderer()
 	DeinitWin32Surface(m_instance, m_surface);
 #endif
 
-	DeinitInstance(m_instance);*/
+	DeinitInstance(m_instance, m_debugUtilsMessengerEXT);*/
 }
 
 VkInstance EngineRenderers::Vulkan::Renderer::InitInstance(
@@ -115,7 +116,7 @@ VkInstance EngineRenderers::Vulkan::Renderer::InitInstance(
 	VkInstance instance;
 
 	if (vkCreateInstance(&instanceCreateInfo, nullptr, &instance) != VK_SUCCESS)
-		throw std::runtime_error("Failed creation the Vulkan instance");
+		FATAL_ERROR("Failed creation the Vulkan instance");
 
 	if (isDebuqReportExtensionRequired)
 	{
@@ -131,12 +132,12 @@ VkInstance EngineRenderers::Vulkan::Renderer::InitInstance(
 			(PFN_vkCreateDebugUtilsMessengerEXT)vkGetInstanceProcAddr(instance, "vkCreateDebugUtilsMessengerEXT");
 
 		if (vkCreateDebugUtilsMessengerEXT(instance, &debugUtilsMessengerCreateInfoEXT, nullptr, &debugUtilsMessenger) != VK_SUCCESS)
-			throw std::runtime_error("Failed creation the debug utils messenger");
+			FATAL_ERROR("Failed creation the debug utils messenger");
 
-		std::cout << "The debug utils messenger was successfully created" << std::endl;
+		_Log("The debug utils messenger was successfully created");
 	}
 
-	std::cout << "The Vulkan instance was successfully created" << std::endl;
+	_Log("The Vulkan instance was successfully created");
 
 	return instance;
 }
@@ -151,7 +152,7 @@ void EngineRenderers::Vulkan::Renderer::DeinitInstance(VkInstance& instance, VkD
 		vkDestroyDebugUtilsMessengerEXT(instance, debugUtilsMessenger, nullptr);
 		debugUtilsMessenger = VK_NULL_HANDLE;
 
-		std::cout << "The debug utils messenger was successfully destroyed" << std::endl;
+		_Log("The debug utils messenger was successfully destroyed");
 	}
 
 	if (instance != VK_NULL_HANDLE)
@@ -159,7 +160,7 @@ void EngineRenderers::Vulkan::Renderer::DeinitInstance(VkInstance& instance, VkD
 		vkDestroyInstance(instance, nullptr);
 		instance = VK_NULL_HANDLE;
 
-		std::cout << "The Vulkan instance was successfully destroyed" << std::endl;
+		_Log("The Vulkan instance was successfully destroyed");
 	}
 }
 #if WIN32
@@ -177,9 +178,9 @@ VkSurfaceKHR EngineRenderers::Vulkan::Renderer::InitWin32Surface(const VkInstanc
 	auto vkCreateWin32SurfaceKHR = (PFN_vkCreateWin32SurfaceKHR)vkGetInstanceProcAddr(instance, "vkCreateWin32SurfaceKHR");
 
 	if (vkCreateWin32SurfaceKHR(instance, &win32SurfaceCreateInfo, nullptr, &surface) != VK_SUCCESS)
-		throw std::runtime_error("The surface was not sucessfully creared");
+		FATAL_ERROR("The surface was not sucessfully creared");
 
-	std::cout << "The surface was successfully creared" << std::endl;
+	_Log("The surface was successfully creared");
 	return surface;
 }
 
@@ -190,7 +191,7 @@ void EngineRenderers::Vulkan::Renderer::DeinitWin32Surface(const VkInstance& ins
 		vkDestroySurfaceKHR(instance, surface, nullptr);
 		surface == VK_NULL_HANDLE;
 
-		std::cout << "The surface was successfully destroyed" << std::endl;
+		_Log("The surface was successfully destroyed");
 	}
 }
 
@@ -210,7 +211,7 @@ Render::Device EngineRenderers::Vulkan::Renderer::InitDevice(
 	vkEnumeratePhysicalDevices(instance, &numberPhysicalDevice, nullptr);
 
 	if (numberPhysicalDevice == 0)
-		throw std::runtime_error("Can't detect divice with Vulkan suppurt!");
+		FATAL_ERROR("Can't detect divice with Vulkan suppurt!");
 
 	physicalDevices.resize(numberPhysicalDevice);
 	vkEnumeratePhysicalDevices(instance, &numberPhysicalDevice, physicalDevices.data());
@@ -234,7 +235,7 @@ Render::Device EngineRenderers::Vulkan::Renderer::InitDevice(
 	}
 
 	if (device.GetPhysicalDevice() == VK_NULL_HANDLE)
-		throw std::runtime_error("Can't detect suitable device!");
+		FATAL_ERROR("Can't detect suitable device!");
 
 	std::vector<uint32_t> queueFamilies = {
 		(uint32_t)device.GetQueueFamilyInfo().present,
@@ -267,7 +268,7 @@ Render::Device EngineRenderers::Vulkan::Renderer::InitDevice(
 
 	VkDevice logicalDevice;
 	if (vkCreateDevice(device.GetPhysicalDevice(), &deviceCreateInfo, nullptr, &logicalDevice) != VK_NULL_HANDLE)
-		throw std::runtime_error("Failed to create logical device!");
+		FATAL_ERROR("Failed to create logical device!");
 
 	device.SetLogicalDevice(logicalDevice);
 
@@ -278,7 +279,7 @@ Render::Device EngineRenderers::Vulkan::Renderer::InitDevice(
 	//device.SetGraphicsQueue(graphics);
 	device.SetPresentQueue(present);
 
-	std::cout << "The device was successfully created" << std::endl;
+	_Log("The device was successfully created");
 
 	return device;
 }
@@ -287,7 +288,7 @@ void EngineRenderers::Vulkan::Renderer::DeinitDevice(Render::Device& device)
 {
 	device.DeInit();
 
-	std::cout << "The device was successfully destroyed" << std::endl;
+	_Log("The device was successfully destroyed");
 }
 
 Render::Swapchain EngineRenderers::Vulkan::Renderer::InitSwapchain(
@@ -302,12 +303,12 @@ Render::Swapchain EngineRenderers::Vulkan::Renderer::InitSwapchain(
 
 	Render::SurfaceInfo surfaceInfo = Render::GetSurfaceInfo(device.GetPhysicalDevice(), surface);
 	if (!surfaceInfo.IsSurfaceFormatSupported(surfaceFormat))
-		throw std::runtime_error("The surface format don't support");
+		FATAL_ERROR("The surface format don't support");
 
 	if (imageCount > 0)
 	{
 		if (imageCount < surfaceInfo.capabilities.minImageCount || imageCount > surfaceInfo.capabilities.maxImageCount)
-			throw std::runtime_error("The surface don't support " + std::to_string(imageCount) + " images/buffers in swap-chain");
+			FATAL_ERROR("The surface don't support " + std::to_string(imageCount) + " images/buffers in swap-chain");
 	}
 	else
 	{
@@ -371,7 +372,7 @@ Render::Swapchain EngineRenderers::Vulkan::Renderer::InitSwapchain(
 	VkSwapchainKHR swapchainKHR;
 
 	if (vkCreateSwapchainKHR(device.GetLogicalDevice(), &swapchainCreateInfo, nullptr, &swapchainKHR) != VK_SUCCESS)
-		throw std::runtime_error("Failed to create swapchain");
+		FATAL_ERROR("Failed to create swapchain");
 
 	if (oldSwapchain)
 		delete oldSwapchain;
@@ -406,7 +407,7 @@ Render::Swapchain EngineRenderers::Vulkan::Renderer::InitSwapchain(
 			imageViewCreateInfo.subresourceRange.layerCount = 1;
 
 			if (vkCreateImageView(device.GetLogicalDevice(), &imageViewCreateInfo, nullptr, &imageView) != VK_SUCCESS)
-				throw std::runtime_error("Failed to create image views");
+				FATAL_ERROR("Failed to create image views");
 
 			swapchainVkImageViews.push_back(imageView);
 		}
@@ -430,7 +431,7 @@ Render::Swapchain EngineRenderers::Vulkan::Renderer::InitSwapchain(
 		framebufferCreateInfo.layers = 1;
 
 		if (vkCreateFramebuffer(device.GetLogicalDevice(), &framebufferCreateInfo, nullptr, &framebuffer) != VK_SUCCESS)
-			throw std::runtime_error("Failed to create framebuffers");
+			FATAL_ERROR("Failed to create framebuffers");
 
 		framebuffers.push_back(framebuffer);
 	}
@@ -439,7 +440,7 @@ Render::Swapchain EngineRenderers::Vulkan::Renderer::InitSwapchain(
 
 	swapchain.SetHandle(swapchainKHR);
 
-	std::cout << "The Swapchain successfully initialized" << std::endl;
+	_Log("The Swapchain successfully initialized");
 
 	return swapchain;
 }
@@ -448,7 +449,7 @@ void EngineRenderers::Vulkan::Renderer::DeinitSwapchain(Render::Swapchain& swapc
 {
 	swapchain.Deinit(device.GetLogicalDevice());
 
-	std::cout << "The Swapchain successfully destroyed" << std::endl;
+	_Log("The Swapchain successfully destroyed");
 }
 
 VkCommandPool EngineRenderers::Vulkan::Renderer::InitCommandPool(const Render::Device& device, uint32_t queueFamilyIndex)
@@ -461,9 +462,9 @@ VkCommandPool EngineRenderers::Vulkan::Renderer::InitCommandPool(const Render::D
 	commandPoolCreateInfo.queueFamilyIndex = queueFamilyIndex;
 
 	if (vkCreateCommandPool(device.GetLogicalDevice(), &commandPoolCreateInfo, nullptr, &commandPool) != VK_SUCCESS)
-		throw std::runtime_error("Failed to create command pool");
+		FATAL_ERROR("Failed to create command pool");
 
-	std::cout << "The command pool was successfully created" << std::endl;
+	_Log("The command pool was successfully created");
 
 	return commandPool;
 }
@@ -475,7 +476,7 @@ void EngineRenderers::Vulkan::Renderer::DeInitCommandPool(VkCommandPool& command
 		vkDestroyCommandPool(device.GetLogicalDevice(), commandPool, nullptr);
 		commandPool = VK_NULL_HANDLE;
 
-		std::cout << "The command pool was successfully destroyed" << std::endl;
+		_Log("The command pool was successfully destroyed");
 	}
 }
 
@@ -490,9 +491,9 @@ std::vector<VkCommandBuffer> EngineRenderers::Vulkan::Renderer::InitCommandBuffe
 	commandBufferAllocateInfo.level = VK_COMMAND_BUFFER_LEVEL_PRIMARY;
 
 	if (vkAllocateCommandBuffers(device.GetLogicalDevice(), &commandBufferAllocateInfo, buffers.data()) != VK_SUCCESS)
-		throw std::runtime_error("Failed to allocate command buffers");
+		FATAL_ERROR("Failed to allocate command buffers");
 
-	std::cout << "The command buffers was successfully allocated" << std::endl;
+	_Log("The command buffers was successfully allocated");
 
 	return buffers;
 }
@@ -504,7 +505,7 @@ void EngineRenderers::Vulkan::Renderer::DeInitCommandBuffers(std::vector<VkComma
 		vkFreeCommandBuffers(device.GetLogicalDevice(), commandPool, (uint32_t)buffers.size(), buffers.data());
 		buffers.clear();
 
-		std::cout << "The command buffers was successfully freed" << std::endl;
+		_Log("The command buffers was successfully freed");
 	}
 }
 
@@ -521,7 +522,7 @@ VkPipelineLayout EngineRenderers::Vulkan::Renderer::InitPipelineLayout(const Ren
 
 	VK_CHECK_ERROR(vkCreatePipelineLayout(device.GetLogicalDevice(), &pipelineLayoutCreateInfo, nullptr, &pipelineLayout), "");
 
-	std::cout << "The pipeline layout successfully initialized" << std::endl;
+	_Log("The pipeline layout successfully initialized");
 
 	return pipelineLayout;
 }
@@ -533,7 +534,7 @@ void EngineRenderers::Vulkan::Renderer::DeinitPipelineLayout(VkPipelineLayout& p
 		vkDestroyPipelineLayout(device.GetLogicalDevice(), pipelineLayout, nullptr);
 		pipelineLayout = VK_NULL_HANDLE;
 
-		std::cout << "The pipeline layout successfully deinitialized" << std::endl;
+		_Log("The pipeline layout successfully deinitialized");
 	}
 }
 
@@ -690,7 +691,7 @@ VkPipeline EngineRenderers::Vulkan::Renderer::InitGraphicsPipeline(const Render:
 	for (auto& shader : shaderStages)
 		vkDestroyShaderModule(device.GetLogicalDevice(), shader.module, nullptr);
 
-	std::cout << "The pipeline sucessfully initialized" << std::endl;
+	_Log("The pipeline sucessfully initialized");
 
 	return graphicsPipeline;
 }
@@ -702,7 +703,7 @@ void EngineRenderers::Vulkan::Renderer::DeinitGraphicsPipeline(VkPipeline& pipel
 		vkDestroyPipeline(device.GetLogicalDevice(), pipeline, nullptr);
 		pipeline = VK_NULL_HANDLE;
 
-		std::cout << "The pipeline sucessfully deinitialized" << std::endl;
+		_Log("The pipeline sucessfully deinitialized");
 	}
 }
 
@@ -717,7 +718,7 @@ VkDescriptorSetLayout EngineRenderers::Vulkan::Renderer::InitDescriptorSetLayout
 
 	VK_CHECK_ERROR(vkCreateDescriptorSetLayout(device.GetLogicalDevice(), &descriptorSetLayoutCreateInfo, nullptr, &layout), "");
 
-	std::cout << "The descriptor set layout successfully initialized" << std::endl;
+	_Log("The descriptor set layout successfully initialized");
 
 	return layout;
 }
@@ -729,7 +730,7 @@ void EngineRenderers::Vulkan::Renderer::DeinitDescriptorSetLayout(VkDescriptorSe
 		vkDestroyDescriptorSetLayout(device.GetLogicalDevice(), layout, nullptr);
 		layout = VK_NULL_HANDLE;
 
-		std::cout << "The descriptor set layout successfully deinitialized" << std::endl;
+		_Log("The descriptor set layout successfully deinitialized");
 	}
 }
 
@@ -746,7 +747,7 @@ VkDescriptorPool EngineRenderers::Vulkan::Renderer::InitDescriptorPool(const Ren
 
 	VK_CHECK_ERROR(vkCreateDescriptorPool(device.GetLogicalDevice(), &descriptorPoolCreateInfo, nullptr, &descriptorPool), "");
 
-	std::cout << "The descriptor pool successfully initialized" << std::endl;
+	_Log("The descriptor pool successfully initialized");
 	
 	return descriptorPool;
 }
@@ -758,7 +759,7 @@ void EngineRenderers::Vulkan::Renderer::DeinitDescriptorPool(VkDescriptorPool& d
 		vkDestroyDescriptorPool(device.GetLogicalDevice(), descriptorPool, nullptr);
 		descriptorPool = VK_NULL_HANDLE;
 
-		std::cout << "The descriptor pool successfully deinitialized" << std::endl;
+		_Log("The descriptor pool successfully deinitialized");
 	}
 }
 
@@ -797,7 +798,7 @@ VkDescriptorSet EngineRenderers::Vulkan::Renderer::InitDescriptorSet(
 
 	vkUpdateDescriptorSets(device.GetLogicalDevice(), (uint32_t)writes.size(), writes.data(), 0, nullptr);
 
-	std::cout << "The descriptor set successfully initialized" << std::endl;
+	_Log("The descriptor set successfully initialized");
 
 	return descriptorSet;
 }
@@ -809,7 +810,7 @@ void EngineRenderers::Vulkan::Renderer::DeinitDescriptorSet(VkDescriptorSet& des
 		VK_CHECK_ERROR(vkFreeDescriptorSets(device.GetLogicalDevice(), descriptorPool, 1, &descriptorSet), "");
 		descriptorSet = VK_NULL_HANDLE;
 
-		std::cout << "The descriptor set successfully deinitialized" << std::endl;
+		_Log("The descriptor set successfully deinitialized");
 	}
 }
 
@@ -890,9 +891,9 @@ VkRenderPass EngineRenderers::Vulkan::Renderer::InitRenderPass(
 
 	VkRenderPass renderPass;
 	if (vkCreateRenderPass(device.GetLogicalDevice(), &renderPassCreateInfo, nullptr, &renderPass) != VK_SUCCESS)
-		throw std::runtime_error("Failed to create render pass!");
+		FATAL_ERROR("Failed to create render pass!");
 
-	std::cout << "The render pass was successfully created" << std::endl;
+	_Log("The render pass was successfully created");
 
 	return renderPass;
 }
@@ -904,6 +905,6 @@ void EngineRenderers::Vulkan::Renderer::DeinitRenderPass(VkRenderPass& renderPas
 		vkDestroyRenderPass(device.GetLogicalDevice(), renderPass, nullptr);
 		renderPass = VK_NULL_HANDLE;
 
-		std::cout << "The render pass was successfully destoyed" << std::endl;
+		_Log("The render pass was successfully destoyed");
 	}
 }

@@ -4,6 +4,7 @@
 #include "LogSystem/LogSystem.h"
 #include "Console/Console.h"
 
+#include <vector>
 #include <boost/filesystem.hpp>
 
 CoreModule::CoreModule()
@@ -31,6 +32,8 @@ void CoreModule::Initialize()
 	m_pInitializeParams.gEngine = gEngine;
 
 	LoadEngineModules(m_pInitializeParams);
+
+	gEngine->pCore->EngineEvent(EEngineEvent::EVENT_ENGINE_CORE_INIT_COMPLETE);
 }
 
 void CoreModule::Update()
@@ -39,6 +42,9 @@ void CoreModule::Update()
 
 void CoreModule::Release()
 {
+	ReleaseLoadedEngineModules();
+
+	this->~CoreModule();
 }
 
 void CoreModule::Quit()
@@ -57,7 +63,10 @@ void CoreModule::RunCoreLoop()
 
 	while (m_bIsEngineLoop)
 	{
-		
+		for (const auto module : m_modules)
+		{
+			module->object->Update();
+		}
 	}
 }
 
@@ -77,7 +86,7 @@ void CoreModule::LoadEngineModules(const IInitializeParams& params)
 	{
 		EngineModule module = LoadModule(lib);
 
-		ASSERT(module, nullptr, "The loading Library is not valid...");
+		ASSERT(module, nullptr, "The loading module is not valid...");
 
 		auto obj = EngineGetProcAddress<IEngineModule::TModulePoint>(module, "CreateEngineModule");
 
@@ -85,21 +94,23 @@ void CoreModule::LoadEngineModules(const IInitializeParams& params)
 
 		auto objectDll = obj();
 
-		ASSERT(objectDll, nullptr, "Couldn't create library object...");
+		ASSERT(objectDll, nullptr, "Couldn't create module object...");
 
 		objectDll->RegisterEngineModule(params);
 
-		_LogSuccess("[%s] Library has been loaded.", objectDll->GetModuleName());
-
-		m_moduels.push_back(new Module(module, objectDll));
+		m_modules.push_back(new Module(module, objectDll));
 	}
+}
+
+void CoreModule::EngineEvent(const EEngineEvent& event)
+{
+	emit m_OnEngineEvent(event);
 }
 
 void CoreModule::ReleaseLoadedEngineModules()
 {
-	for (auto module : m_moduels)
+	for (auto module : m_modules)
 	{
-		_Log("[%s] Releasing the library...", module->object->GetModuleName());
 		module->object->Release();
 		SAFE_DELETE(module);
 	}
