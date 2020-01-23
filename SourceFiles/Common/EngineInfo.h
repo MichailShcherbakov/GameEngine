@@ -1,0 +1,15 @@
+#ifndef _ENGINE_INFO_H_
+#define _ENGINE_INFO_H_
+
+#define ENGINE_NAME "Union Engine"
+
+#define ENGINE_VERSION_MAJOR 0
+#define ENGINE_VERSION_MINOR 3
+#define ENGINE_VERSION_BUILD 175
+
+#define ENGINE_GAME_TITLE "Launcher"
+
+#define GAME_VERSION_MAJOR 0
+#define GAME_VERSION_MINOR 0
+
+#endif // _ENGINE_INFO_H_
