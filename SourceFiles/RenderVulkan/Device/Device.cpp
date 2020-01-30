@@ -2,15 +2,15 @@
 #include "Device.h"
 #include <vector>
 
-Render::Device::Device()
+EngineRenderers::Vulkan::Device::Device()
 {
 }
 
-Render::Device::~Device()
+EngineRenderers::Vulkan::Device::~Device()
 {
 }
 
-void Render::Device::DeInit()
+void EngineRenderers::Vulkan::Device::DeInit()
 {
 	if (m_logicalDevice != VK_NULL_HANDLE)
 		vkDestroyDevice(m_logicalDevice, nullptr);
@@ -22,52 +22,52 @@ void Render::Device::DeInit()
 	m_queueFamilyInfo = {};
 }
 
-void Render::Device::SetPhysicalDevice(const VkPhysicalDevice& physicalDevice)
+void EngineRenderers::Vulkan::Device::SetPhysicalDevice(const VkPhysicalDevice& physicalDevice)
 {
 	m_physicalDevice = physicalDevice;
 }
 
-const VkPhysicalDevice& Render::Device::GetPhysicalDevice() const
+const VkPhysicalDevice& EngineRenderers::Vulkan::Device::GetPhysicalDevice() const
 {
 	return m_physicalDevice;
 }
 
-void Render::Device::SetLogicalDevice(const VkDevice& logicalDevice)
+void EngineRenderers::Vulkan::Device::SetLogicalDevice(const VkDevice& logicalDevice)
 {
 	m_logicalDevice = logicalDevice;
 }
 
-const VkDevice& Render::Device::GetLogicalDevice() const
+const VkDevice& EngineRenderers::Vulkan::Device::GetLogicalDevice() const
 {
 	return m_logicalDevice;
 }
 
-void Render::Device::SetQueueFamilyInfo(const Render::QueueFamilyInfo& queueFamilyInfo)
+void EngineRenderers::Vulkan::Device::SetQueueFamilyInfo(const EngineRenderers::Vulkan::QueueFamilyInfo& queueFamilyInfo)
 {
 	m_queueFamilyInfo = queueFamilyInfo;
 }
 
-void Render::Device::SetGraphicsQueue(const VkQueue& queue)
+void EngineRenderers::Vulkan::Device::SetGraphicsQueue(const VkQueue& queue)
 {
 	m_graphicsQueue = queue;
 }
 
-void Render::Device::SetPresentQueue(const VkQueue& queue)
+void EngineRenderers::Vulkan::Device::SetPresentQueue(const VkQueue& queue)
 {
 	m_presentQueue = queue;
 }
 
-const Render::QueueFamilyInfo& Render::Device::GetQueueFamilyInfo() const
+const EngineRenderers::Vulkan::QueueFamilyInfo& EngineRenderers::Vulkan::Device::GetQueueFamilyInfo() const
 {
 	return m_queueFamilyInfo;
 }
 
-const VkQueue& Render::Device::GetGraphicsQueue() const
+const VkQueue& EngineRenderers::Vulkan::Device::GetGraphicsQueue() const
 {
 	return m_graphicsQueue;
 }
 
-const VkQueue& Render::Device::GetPresentQueue() const
+const VkQueue& EngineRenderers::Vulkan::Device::GetPresentQueue() const
 {
 	return m_presentQueue;
 }

@@ -2,8 +2,8 @@
 #include "RendererVulkanModule.h"
 
 #include <Graphics/Surface/ISurface.h>
-
-#include "Graphics/Mesh/Mesh.h"
+#include <Graphics/Loader/ILoader.h>
+#include <Graphics/Mesh/Mesh.h>
 
 RendererVulkanModule::RendererVulkanModule()
 {
@@ -123,7 +123,9 @@ void RendererVulkanModule::Initialize()
 
 	VK_CHECK_ERROR(vkCreateFence(m_device.GetLogicalDevice(), &fenceInfo, nullptr, &m_fence), "");
 
-	std::vector<Graphics::Vertex> vertices =
+	std::vector<Graphics::Vertex> vertices = gEngine->pCore->GetMeshLoader()->Load(gEngine->pCore->GetRootDir() + "/Models/deer.obj").at(0).GetPolygonVertices();
+
+	 /*vertices =
 	{
 		{ glm::vec3(0.0f, -0.5f, 0.0f), glm::vec3(1.0f, 0.0f, 0.0f), },
 		{ glm::vec3(0.5f, 0.0f, 0.0f), glm::vec3(0.0f, 1.0f, 0.0f), },
@@ -131,24 +133,29 @@ void RendererVulkanModule::Initialize()
 	};
 
 	uint64_t size = (uint64_t)(vertices.size() * sizeof(Graphics::Vertex));
-	m_vertexBuffer = new Render::Buffer(
+	m_vertexBuffer = new EngineRenderers::Vulkan::Buffer(
 		m_device,
 		size,
 		VK_BUFFER_USAGE_VERTEX_BUFFER_BIT,
 		VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT,
 		VK_SHARING_MODE_EXCLUSIVE
 	);
+	m_vertexBuffer->Allocate(size, vertices.data());*/
 
-	m_vertexBuffer->Map(size, 0);
-	m_vertexBuffer->MemoryCopy(vertices.data(), (size_t)(vertices.size() * sizeof(Graphics::Vertex)));
-	m_vertexBuffer->UnMap();
-
-
+	uint64_t size = (uint64_t)(vertices.size() * sizeof(Graphics::Vertex));
+	m_vertexBuffer = new EngineRenderers::Vulkan::Buffer(
+		m_device,
+		size,
+		VK_BUFFER_USAGE_VERTEX_BUFFER_BIT,
+		VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT,
+		VK_SHARING_MODE_EXCLUSIVE
+	);
+	m_vertexBuffer->Allocate(size, vertices.data());
 
 	glm::vec3 mainColor = { 1.0f, 0.0f, 0.0f };
 	size = (uint64_t)sizeof(mainColor);
 
-	m_colorUniformBuffer = new Render::UniformBuffer(
+	m_colorUniformBuffer = new EngineRenderers::Vulkan::UniformBuffer(
 		m_device,
 		size,
 		VK_BUFFER_USAGE_UNIFORM_BUFFER_BIT,
@@ -156,9 +163,7 @@ void RendererVulkanModule::Initialize()
 		VK_SHARING_MODE_EXCLUSIVE
 	);
 
-	m_colorUniformBuffer->Map(size, 0);
-	m_colorUniformBuffer->MemoryCopy(&mainColor, size);
-	m_colorUniformBuffer->UnMap();
+	m_colorUniformBuffer- m_colorUniformBuffer->Allocate(size, &mainColor);
 
 	m_descriptorSet = EngineRenderers::Vulkan::Renderer::InitDescriptorSet(m_device, m_descriptorPool, { m_layout }, { m_colorUniformBuffer });
 

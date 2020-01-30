@@ -11,7 +11,7 @@ GLFWModule::~GLFWModule()
 {
 	if (m_pWindow)
 		glfwTerminate();
-
+		
 	gEngine->pCore->OnEngineEvent -= LISTENER(*this, GLFWModule::OnEngineEvent);
 }
 

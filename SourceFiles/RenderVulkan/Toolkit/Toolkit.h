@@ -15,26 +15,29 @@ if (result != VK_SUCCESS) \
 if (result == VK_NULL_HANDLE) \
 	throw std::runtime_error(message);
 
-namespace Render
+namespace EngineRenderers
 {
-	bool CheckRequestedInstanceLayersValidation(const std::vector<const char*>& requestedLayers);
-	bool CheckRequestedInstanceExtensions(const std::vector<const char*>& requestedExtensions);
+	namespace Vulkan
+	{
+		bool CheckRequestedInstanceLayersValidation(const std::vector<const char*>& requestedLayers);
+		bool CheckRequestedInstanceExtensions(const std::vector<const char*>& requestedExtensions);
 
-	bool CheckRequestedDeviceLayersValidation(const VkPhysicalDevice& device, const std::vector<const char*>& requestedLayers);
-	bool CheckRequestedDeviceExtensions(const VkPhysicalDevice& device, const std::vector<const char*>& requestedExtensions);
+		bool CheckRequestedDeviceLayersValidation(const VkPhysicalDevice& device, const std::vector<const char*>& requestedLayers);
+		bool CheckRequestedDeviceExtensions(const VkPhysicalDevice& device, const std::vector<const char*>& requestedExtensions);
 
-	Render::QueueFamilyInfo GetQueueFamilyInfo(const VkPhysicalDevice& physicalDevice, const VkSurfaceKHR& surface, bool uniqueStrict = false);
-	Render::SurfaceInfo GetSurfaceInfo(const VkPhysicalDevice& physicalDevice, const VkSurfaceKHR& surface);
+		EngineRenderers::Vulkan::QueueFamilyInfo GetQueueFamilyInfo(const VkPhysicalDevice& physicalDevice, const VkSurfaceKHR& surface, bool uniqueStrict = false);
+		EngineRenderers::Vulkan::SurfaceInfo GetSurfaceInfo(const VkPhysicalDevice& physicalDevice, const VkSurfaceKHR& surface);
 
-	VkShaderModule LoadShader(const std::string path, const VkDevice& device);
+		VkShaderModule LoadShader(const std::string path, const VkDevice& device);
 
-	VKAPI_ATTR VkBool32 VKAPI_CALL DebugUtilsMessengerCallback
-	(
-		VkDebugUtilsMessageSeverityFlagBitsEXT			messageSeverity,
-		VkDebugUtilsMessageTypeFlagsEXT					messageType,
-		const VkDebugUtilsMessengerCallbackDataEXT* pCallbackData,
-		void* pUserData
-	);
+		VKAPI_ATTR VkBool32 VKAPI_CALL DebugUtilsMessengerCallback
+		(
+			VkDebugUtilsMessageSeverityFlagBitsEXT			messageSeverity,
+			VkDebugUtilsMessageTypeFlagsEXT					messageType,
+			const VkDebugUtilsMessengerCallbackDataEXT* pCallbackData,
+			void* pUserData
+		);
+	}
 }
 
 #endif

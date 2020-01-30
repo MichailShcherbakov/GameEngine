@@ -3,7 +3,7 @@
 
 #include "../Toolkit/Toolkit.h"
 
-Render::Buffer::Buffer(const Render::Device& device, const VkDeviceSize& size, VkBufferUsageFlags usageFlags, VkMemoryPropertyFlags properties, VkSharingMode sharingMode)
+EngineRenderers::Vulkan::Buffer::Buffer(const EngineRenderers::Vulkan::Device& device, const VkDeviceSize& size, VkBufferUsageFlags usageFlags, VkMemoryPropertyFlags properties, VkSharingMode sharingMode)
 	: m_device(device.GetLogicalDevice())
 {
 	VK_CHECK_NULL_HANDLE(m_device, "");
@@ -54,37 +54,58 @@ Render::Buffer::Buffer(const Render::Device& device, const VkDeviceSize& size, V
 	m_size = size;
 }
 
-Render::Buffer::~Buffer()
+EngineRenderers::Vulkan::Buffer::~Buffer()
+{
+	Free();
+}
+
+bool EngineRenderers::Vulkan::Buffer::Allocate(const size_t& size, void* data)
+{
+	if (Map(size, 0) != VK_SUCCESS)
+		return false;
+
+	if (!MemoryCopy(data, size))
+		return false;
+
+	UnMap();
+
+	return true;
+}
+
+bool EngineRenderers::Vulkan::Buffer::Free()
 {
 	if (m_handle != VK_NULL_HANDLE && m_device != VK_NULL_HANDLE)
 	{
 		vkDestroyBuffer(m_device, m_handle, nullptr);
 		vkFreeMemory(m_device, m_memory, nullptr);
 		m_handle = VK_NULL_HANDLE;
+		return true;
 	}
+	
+	return false;
 }
 
-VkBuffer Render::Buffer::GetHandle() const
+VkBuffer EngineRenderers::Vulkan::Buffer::GetHandle() const
 {
 	return m_handle;
 }
 
-VkDeviceMemory Render::Buffer::GetMemory() const
+VkDeviceMemory EngineRenderers::Vulkan::Buffer::GetMemory() const
 {
 	return m_memory;
 }
 
-VkDeviceSize Render::Buffer::GetSize() const
+VkDeviceSize EngineRenderers::Vulkan::Buffer::GetSize() const
 { 
 	return m_size;
 }
 
-VkResult Render::Buffer::Map(const VkDeviceSize& size, const VkDeviceSize offset)
+VkResult EngineRenderers::Vulkan::Buffer::Map(const VkDeviceSize& size, const VkDeviceSize offset)
 {
 	return vkMapMemory(m_device, m_memory, offset, size, 0, &m_pMap);
 }
 
-void* Render::Buffer::MemoryCopy(void const* data, size_t size)
+void* EngineRenderers::Vulkan::Buffer::MemoryCopy(void const* data, size_t size)
 {
 	if (m_pMap == nullptr)
 		return nullptr;
@@ -92,7 +113,7 @@ void* Render::Buffer::MemoryCopy(void const* data, size_t size)
 	return memcpy(m_pMap, data, size);
 }
 
-void Render::Buffer::UnMap()
+void EngineRenderers::Vulkan::Buffer::UnMap()
 {
 	if (m_pMap)
 	{
@@ -100,19 +121,19 @@ void Render::Buffer::UnMap()
 	}
 }
 
-Render::UniformBuffer::UniformBuffer(const Render::Device& device, const VkDeviceSize& size, VkBufferUsageFlags flags, VkMemoryPropertyFlags properties, VkSharingMode sharingMode)
-	: Buffer(device, size, flags, properties, sharingMode)
+EngineRenderers::Vulkan::UniformBuffer::UniformBuffer(const EngineRenderers::Vulkan::Device& device, const VkDeviceSize& size, VkBufferUsageFlags flags, VkMemoryPropertyFlags properties, VkSharingMode sharingMode)
+	: EngineRenderers::Vulkan::Buffer(device, size, flags, properties, sharingMode)
 {
 	m_descriptorBufferInfo.buffer = m_handle;
 	m_descriptorBufferInfo.range = size;
 	m_descriptorBufferInfo.offset = 0;
 }
 
-Render::UniformBuffer::~UniformBuffer()
+EngineRenderers::Vulkan::UniformBuffer::~UniformBuffer()
 {
 }
 
-VkDescriptorBufferInfo Render::UniformBuffer::GetDescriptorBufferInfo() const
+VkDescriptorBufferInfo EngineRenderers::Vulkan::UniformBuffer::GetDescriptorBufferInfo() const
 {
 	return m_descriptorBufferInfo;
 }

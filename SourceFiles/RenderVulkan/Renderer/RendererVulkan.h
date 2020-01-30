@@ -54,7 +54,7 @@ namespace EngineRenderers
 			);
 #endif // WIN32
 
-			static Render::Device InitDevice(
+			static EngineRenderers::Vulkan::Device InitDevice(
 				const VkInstance& instance,
 				const VkSurfaceKHR& surface,
 				const std::vector<const char*>& requestedLayersValidation,
@@ -63,11 +63,11 @@ namespace EngineRenderers
 			);
 
 			static void DeinitDevice(
-				Render::Device& device
+				EngineRenderers::Vulkan::Device& device
 			);
 
 			static VkRenderPass InitRenderPass(
-				const Render::Device& device,
+				const EngineRenderers::Vulkan::Device& device,
 				const VkSurfaceKHR& surface,
 				const VkFormat& colorAttachmentFormat,
 				const VkFormat& depthStencilFormat
@@ -75,99 +75,99 @@ namespace EngineRenderers
 
 			static void DeinitRenderPass(
 				VkRenderPass& renderPass,
-				const Render::Device& device
+				const EngineRenderers::Vulkan::Device& device
 			);
 
-			static Render::Swapchain InitSwapchain(
-				const Render::Device& device,
+			static EngineRenderers::Vulkan::Swapchain InitSwapchain(
+				const EngineRenderers::Vulkan::Device& device,
 				const VkSurfaceKHR& surface,
 				const VkRenderPass& renderPass,
 				const VkSurfaceFormatKHR& surfaceFormat,
 				uint32_t imageCount,
-				Render::Swapchain* oldSwapchain = nullptr
+				EngineRenderers::Vulkan::Swapchain* oldSwapchain = nullptr
 			);
 
 			static void DeinitSwapchain(
-				Render::Swapchain& swapchain,
-				const Render::Device& device
+				EngineRenderers::Vulkan::Swapchain& swapchain,
+				const EngineRenderers::Vulkan::Device& device
 			);
 
 			static VkCommandPool InitCommandPool(
-				const Render::Device& device,
+				const EngineRenderers::Vulkan::Device& device,
 				uint32_t queueFamilyIndex
 			);
 
 			static void DeInitCommandPool(
 				VkCommandPool& commandPool,
-				const Render::Device& device
+				const EngineRenderers::Vulkan::Device& device
 			);
 
 			static std::vector<VkCommandBuffer> InitCommandBuffers(
-				const Render::Device& device,
+				const EngineRenderers::Vulkan::Device& device,
 				const VkCommandPool& commandPool,
 				uint32_t count
 			);
 
 			static void DeInitCommandBuffers(
 				std::vector<VkCommandBuffer>& buffers,
-				const Render::Device& device,
+				const EngineRenderers::Vulkan::Device& device,
 				const VkCommandPool& commandPool
 			);
 
 			static VkPipelineLayout InitPipelineLayout(
-				const Render::Device& device,
+				const EngineRenderers::Vulkan::Device& device,
 				const std::vector<VkDescriptorSetLayout>& layouts,
 				const std::vector<VkPushConstantRange>& constants
 			);
 
 			static void DeinitPipelineLayout(
 				VkPipelineLayout& pipelineLayout,
-				const Render::Device& device
+				const EngineRenderers::Vulkan::Device& device
 			);
 
 			static VkPipeline InitGraphicsPipeline(
-				const Render::Device& device,
-				const Render::Swapchain& swapchain,
+				const EngineRenderers::Vulkan::Device& device,
+				const EngineRenderers::Vulkan::Swapchain& swapchain,
 				const VkPipelineLayout& pipelineLayout,
 				const VkRenderPass& renderPass
 			);
 
 			static void DeinitGraphicsPipeline(
 				VkPipeline& pipeline,
-				const Render::Device& device
+				const EngineRenderers::Vulkan::Device& device
 			);
 
 			static VkDescriptorSetLayout InitDescriptorSetLayout(
-				const Render::Device& device,
+				const EngineRenderers::Vulkan::Device& device,
 				const std::vector<VkDescriptorSetLayoutBinding>& binding
 			);
 
 			static void DeinitDescriptorSetLayout(
 				VkDescriptorSetLayout& layout,
-				const Render::Device& device
+				const EngineRenderers::Vulkan::Device& device
 			);
 
 			static VkDescriptorPool InitDescriptorPool(
-				const Render::Device& device,
+				const EngineRenderers::Vulkan::Device& device,
 				const std::vector<VkDescriptorPoolSize> descriptorPoolSizes
 			);
 
 			static void DeinitDescriptorPool(
 				VkDescriptorPool& descriptorPool,
-				const Render::Device& device
+				const EngineRenderers::Vulkan::Device& device
 			);
 
 			static VkDescriptorSet InitDescriptorSet(
-				const Render::Device& device,
+				const EngineRenderers::Vulkan::Device& device,
 				const VkDescriptorPool& descriptorPool,
 				const std::vector<VkDescriptorSetLayout>& descriptorSetLayouts,
-				const std::vector<Render::UniformBuffer*>& buffers
+				const std::vector<EngineRenderers::Vulkan::UniformBuffer*>& buffers
 			);
 
 			static void DeinitDescriptorSet(
 				VkDescriptorSet& descriptorSet,
 				const VkDescriptorPool& descriptorPool,
-				const Render::Device& device);
+				const EngineRenderers::Vulkan::Device& device);
 
 		private:
 			/*VkInstance m_instance;

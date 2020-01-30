@@ -4,51 +4,54 @@
 #include "vulkan/vulkan.h"
 #include <vector>
 
-namespace Render
+namespace EngineRenderers
 {
-	struct QueueFamilyInfo
+	namespace Vulkan
 	{
-		int32_t present = -1;
-		int32_t graphics = -1;
-		int32_t compute = -1;
-		int32_t transfer = -1;
-
-		bool IsRenderingCompatible() const
+		struct QueueFamilyInfo
 		{
-			return graphics != -1 && present != -1;
-		}
-	};
+			int32_t present = -1;
+			int32_t graphics = -1;
+			int32_t compute = -1;
+			int32_t transfer = -1;
 
-	class Device
-	{
-	public:
-		Device();
-		~Device();
+			bool IsRenderingCompatible() const
+			{
+				return graphics != -1 && present != -1;
+			}
+		};
 
-	public:
-		void DeInit();
+		class Device
+		{
+		public:
+			Device();
+			~Device();
 
-	public:
-		void SetQueueFamilyInfo(const Render::QueueFamilyInfo& queueFamilyInfo);
-		void SetPhysicalDevice(const VkPhysicalDevice& physicalDevice);
-		void SetLogicalDevice(const VkDevice& logicalDevice); 
-		void SetGraphicsQueue(const VkQueue& queue);
-		void SetPresentQueue(const VkQueue& queue);
+		public:
+			void DeInit();
 
-	public:
-		const Render::QueueFamilyInfo& GetQueueFamilyInfo() const;
-		const VkPhysicalDevice& GetPhysicalDevice() const;
-		const VkDevice& GetLogicalDevice() const;
-		const VkQueue& GetGraphicsQueue() const;
-		const VkQueue& GetPresentQueue() const;
+		public:
+			void SetQueueFamilyInfo(const EngineRenderers::Vulkan::QueueFamilyInfo& queueFamilyInfo);
+			void SetPhysicalDevice(const VkPhysicalDevice& physicalDevice);
+			void SetLogicalDevice(const VkDevice& logicalDevice);
+			void SetGraphicsQueue(const VkQueue& queue);
+			void SetPresentQueue(const VkQueue& queue);
 
-	private:
-		Render::QueueFamilyInfo m_queueFamilyInfo;
-		VkPhysicalDevice m_physicalDevice;
-		VkDevice m_logicalDevice;
-		VkQueue m_graphicsQueue;
-		VkQueue m_presentQueue;
-	};
+		public:
+			const EngineRenderers::Vulkan::QueueFamilyInfo& GetQueueFamilyInfo() const;
+			const VkPhysicalDevice& GetPhysicalDevice() const;
+			const VkDevice& GetLogicalDevice() const;
+			const VkQueue& GetGraphicsQueue() const;
+			const VkQueue& GetPresentQueue() const;
+
+		private:
+			EngineRenderers::Vulkan::QueueFamilyInfo m_queueFamilyInfo;
+			VkPhysicalDevice m_physicalDevice;
+			VkDevice m_logicalDevice;
+			VkQueue m_graphicsQueue;
+			VkQueue m_presentQueue;
+		};
+	}
 }
 
 #endif // _DEVICE_H_

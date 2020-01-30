@@ -4,6 +4,7 @@
 #include "EventSystem/Event.h"
 
 struct IInitializeParams;
+struct ILoader;
 
 enum class EEngineEvent : uint16_t
 {
@@ -32,6 +33,7 @@ struct ICoreModule
 	virtual std::string GetRootDir() = 0;
 	virtual void LoadEngineModules(const IInitializeParams& params) = 0;
 	virtual void EngineEvent(const EEngineEvent& event) = 0;
+	virtual ILoader* GetMeshLoader() = 0;
 };
 
 #endif // _I_CORE_MODULE_H_

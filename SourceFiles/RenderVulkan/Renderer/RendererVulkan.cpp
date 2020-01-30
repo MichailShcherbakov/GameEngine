@@ -89,7 +89,7 @@ VkInstance EngineRenderers::Vulkan::Renderer::InitInstance(
 
 	bool isDebuqReportExtensionRequired = false;
 
-	if (Render::CheckRequestedInstanceExtensions(requestedExtension) && !requestedExtension.empty())
+	if (EngineRenderers::Vulkan::CheckRequestedInstanceExtensions(requestedExtension) && !requestedExtension.empty())
 	{
 		instanceCreateInfo.enabledExtensionCount = (uint32_t)requestedExtension.size();
 		instanceCreateInfo.ppEnabledExtensionNames = requestedExtension.data();
@@ -105,7 +105,7 @@ VkInstance EngineRenderers::Vulkan::Renderer::InitInstance(
 
 		if (isDebuqReportExtensionRequired && !requestedLayersValidation.empty())
 		{
-			if (Render::CheckRequestedInstanceLayersValidation(requestedLayersValidation))
+			if (EngineRenderers::Vulkan::CheckRequestedInstanceLayersValidation(requestedLayersValidation))
 			{
 				instanceCreateInfo.enabledLayerCount = (uint32_t)requestedLayersValidation.size();
 				instanceCreateInfo.ppEnabledLayerNames = requestedLayersValidation.data();
@@ -126,7 +126,7 @@ VkInstance EngineRenderers::Vulkan::Renderer::InitInstance(
 		debugUtilsMessengerCreateInfoEXT.messageType = VK_DEBUG_UTILS_MESSAGE_TYPE_GENERAL_BIT_EXT | VK_DEBUG_UTILS_MESSAGE_TYPE_VALIDATION_BIT_EXT | VK_DEBUG_UTILS_MESSAGE_TYPE_PERFORMANCE_BIT_EXT;
 		debugUtilsMessengerCreateInfoEXT.flags = 0;
 		debugUtilsMessengerCreateInfoEXT.pNext = nullptr;
-		debugUtilsMessengerCreateInfoEXT.pfnUserCallback = Render::DebugUtilsMessengerCallback;
+		debugUtilsMessengerCreateInfoEXT.pfnUserCallback = EngineRenderers::Vulkan::DebugUtilsMessengerCallback;
 
 		auto vkCreateDebugUtilsMessengerEXT = 
 			(PFN_vkCreateDebugUtilsMessengerEXT)vkGetInstanceProcAddr(instance, "vkCreateDebugUtilsMessengerEXT");
@@ -197,14 +197,14 @@ void EngineRenderers::Vulkan::Renderer::DeinitWin32Surface(const VkInstance& ins
 
 #endif // WIN32
 
-Render::Device EngineRenderers::Vulkan::Renderer::InitDevice(
+EngineRenderers::Vulkan::Device EngineRenderers::Vulkan::Renderer::InitDevice(
 	const VkInstance& instance, 
 	const VkSurfaceKHR& surface, 
 	const std::vector<const char*>& requiredValidationLayers, 
 	const std::vector<const char*>& requiredExtentions, 
 	bool uniqueQueueFamilyIndexes)
 {
-	Render::Device device;
+	EngineRenderers::Vulkan::Device device;
 
 	uint32_t numberPhysicalDevice = 0;
 	std::vector<VkPhysicalDevice> physicalDevices;
@@ -218,13 +218,13 @@ Render::Device EngineRenderers::Vulkan::Renderer::InitDevice(
 
 	for (auto physicalDevice : physicalDevices)
 	{
-		if (!Render::CheckRequestedDeviceExtensions(physicalDevice, requiredExtentions))
+		if (!EngineRenderers::Vulkan::CheckRequestedDeviceExtensions(physicalDevice, requiredExtentions))
 			break;
 
-		if (!Render::CheckRequestedDeviceLayersValidation(physicalDevice, requiredValidationLayers))
+		if (!EngineRenderers::Vulkan::CheckRequestedDeviceLayersValidation(physicalDevice, requiredValidationLayers))
 			break;
 
-		Render::QueueFamilyInfo queueFamilyInfo = Render::GetQueueFamilyInfo(physicalDevice, surface, uniqueQueueFamilyIndexes);
+		EngineRenderers::Vulkan::QueueFamilyInfo queueFamilyInfo = EngineRenderers::Vulkan::GetQueueFamilyInfo(physicalDevice, surface, uniqueQueueFamilyIndexes);
 
 		if (!queueFamilyInfo.IsRenderingCompatible())
 			break;
@@ -284,24 +284,24 @@ Render::Device EngineRenderers::Vulkan::Renderer::InitDevice(
 	return device;
 }
 
-void EngineRenderers::Vulkan::Renderer::DeinitDevice(Render::Device& device)
+void EngineRenderers::Vulkan::Renderer::DeinitDevice(EngineRenderers::Vulkan::Device& device)
 {
 	device.DeInit();
 
 	_Log("The device was successfully destroyed");
 }
 
-Render::Swapchain EngineRenderers::Vulkan::Renderer::InitSwapchain(
-	const Render::Device& device,
+EngineRenderers::Vulkan::Swapchain EngineRenderers::Vulkan::Renderer::InitSwapchain(
+	const EngineRenderers::Vulkan::Device& device,
 	const VkSurfaceKHR& surface, 
 	const VkRenderPass& renderPass,
 	const VkSurfaceFormatKHR& surfaceFormat,
 	uint32_t imageCount,
-	Render::Swapchain* oldSwapchain)
+	EngineRenderers::Vulkan::Swapchain* oldSwapchain)
 {
-	Render::Swapchain swapchain;
+	EngineRenderers::Vulkan::Swapchain swapchain;
 
-	Render::SurfaceInfo surfaceInfo = Render::GetSurfaceInfo(device.GetPhysicalDevice(), surface);
+	EngineRenderers::Vulkan::SurfaceInfo surfaceInfo = EngineRenderers::Vulkan::GetSurfaceInfo(device.GetPhysicalDevice(), surface);
 	if (!surfaceInfo.IsSurfaceFormatSupported(surfaceFormat))
 		FATAL_ERROR("The surface format don't support");
 
@@ -445,14 +445,14 @@ Render::Swapchain EngineRenderers::Vulkan::Renderer::InitSwapchain(
 	return swapchain;
 }
 
-void EngineRenderers::Vulkan::Renderer::DeinitSwapchain(Render::Swapchain& swapchain, const Render::Device& device)
+void EngineRenderers::Vulkan::Renderer::DeinitSwapchain(EngineRenderers::Vulkan::Swapchain& swapchain, const EngineRenderers::Vulkan::Device& device)
 {
 	swapchain.Deinit(device.GetLogicalDevice());
 
 	_Log("The Swapchain successfully destroyed");
 }
 
-VkCommandPool EngineRenderers::Vulkan::Renderer::InitCommandPool(const Render::Device& device, uint32_t queueFamilyIndex)
+VkCommandPool EngineRenderers::Vulkan::Renderer::InitCommandPool(const EngineRenderers::Vulkan::Device& device, uint32_t queueFamilyIndex)
 {
 	VkCommandPool commandPool;
 
@@ -469,7 +469,7 @@ VkCommandPool EngineRenderers::Vulkan::Renderer::InitCommandPool(const Render::D
 	return commandPool;
 }
 
-void EngineRenderers::Vulkan::Renderer::DeInitCommandPool(VkCommandPool& commandPool, const Render::Device& device)
+void EngineRenderers::Vulkan::Renderer::DeInitCommandPool(VkCommandPool& commandPool, const EngineRenderers::Vulkan::Device& device)
 {
 	if (commandPool != VK_NULL_HANDLE)
 	{
@@ -480,7 +480,7 @@ void EngineRenderers::Vulkan::Renderer::DeInitCommandPool(VkCommandPool& command
 	}
 }
 
-std::vector<VkCommandBuffer> EngineRenderers::Vulkan::Renderer::InitCommandBuffers(const Render::Device& device, const VkCommandPool& commandPool, uint32_t count)
+std::vector<VkCommandBuffer> EngineRenderers::Vulkan::Renderer::InitCommandBuffers(const EngineRenderers::Vulkan::Device& device, const VkCommandPool& commandPool, uint32_t count)
 {
 	std::vector<VkCommandBuffer> buffers(count);
 
@@ -498,7 +498,7 @@ std::vector<VkCommandBuffer> EngineRenderers::Vulkan::Renderer::InitCommandBuffe
 	return buffers;
 }
 
-void EngineRenderers::Vulkan::Renderer::DeInitCommandBuffers(std::vector<VkCommandBuffer>& buffers, const Render::Device& device, const VkCommandPool& commandPool)
+void EngineRenderers::Vulkan::Renderer::DeInitCommandBuffers(std::vector<VkCommandBuffer>& buffers, const EngineRenderers::Vulkan::Device& device, const VkCommandPool& commandPool)
 {
 	if (!buffers.empty())
 	{
@@ -509,7 +509,7 @@ void EngineRenderers::Vulkan::Renderer::DeInitCommandBuffers(std::vector<VkComma
 	}
 }
 
-VkPipelineLayout EngineRenderers::Vulkan::Renderer::InitPipelineLayout(const Render::Device& device, const std::vector<VkDescriptorSetLayout>& layouts, const std::vector<VkPushConstantRange>& constants)
+VkPipelineLayout EngineRenderers::Vulkan::Renderer::InitPipelineLayout(const EngineRenderers::Vulkan::Device& device, const std::vector<VkDescriptorSetLayout>& layouts, const std::vector<VkPushConstantRange>& constants)
 {
 	VkPipelineLayout pipelineLayout = VK_NULL_HANDLE;
 
@@ -527,7 +527,7 @@ VkPipelineLayout EngineRenderers::Vulkan::Renderer::InitPipelineLayout(const Ren
 	return pipelineLayout;
 }
 
-void EngineRenderers::Vulkan::Renderer::DeinitPipelineLayout(VkPipelineLayout& pipelineLayout, const Render::Device& device)
+void EngineRenderers::Vulkan::Renderer::DeinitPipelineLayout(VkPipelineLayout& pipelineLayout, const EngineRenderers::Vulkan::Device& device)
 {
 	if (pipelineLayout != VK_NULL_HANDLE)
 	{
@@ -538,7 +538,7 @@ void EngineRenderers::Vulkan::Renderer::DeinitPipelineLayout(VkPipelineLayout& p
 	}
 }
 
-VkPipeline EngineRenderers::Vulkan::Renderer::InitGraphicsPipeline(const Render::Device& device, const Render::Swapchain& swapchain, const VkPipelineLayout& pipelineLayout, const VkRenderPass& renderPass)
+VkPipeline EngineRenderers::Vulkan::Renderer::InitGraphicsPipeline(const EngineRenderers::Vulkan::Device& device, const EngineRenderers::Vulkan::Swapchain& swapchain, const VkPipelineLayout& pipelineLayout, const VkRenderPass& renderPass)
 {
 	VkPipeline graphicsPipeline = VK_NULL_HANDLE;
 
@@ -586,7 +586,7 @@ VkPipeline EngineRenderers::Vulkan::Renderer::InitGraphicsPipeline(const Render:
 			nullptr,
 			0,
 			VK_SHADER_STAGE_VERTEX_BIT,
-			Render::LoadShader(boost::filesystem::absolute("../../../Shaders/base.vert.spv").string().c_str(), device.GetLogicalDevice()),
+			EngineRenderers::Vulkan::LoadShader(boost::filesystem::absolute("../../../Shaders/base.vert.spv").string().c_str(), device.GetLogicalDevice()),
 			"main",
 			nullptr
 		},
@@ -595,7 +595,7 @@ VkPipeline EngineRenderers::Vulkan::Renderer::InitGraphicsPipeline(const Render:
 			nullptr,
 			0,
 			VK_SHADER_STAGE_FRAGMENT_BIT,
-			Render::LoadShader("../../../Shaders/base.frag.spv", device.GetLogicalDevice()),
+			EngineRenderers::Vulkan::LoadShader("../../../Shaders/base.frag.spv", device.GetLogicalDevice()),
 			"main",
 			nullptr
 		},
@@ -696,7 +696,7 @@ VkPipeline EngineRenderers::Vulkan::Renderer::InitGraphicsPipeline(const Render:
 	return graphicsPipeline;
 }
 
-void EngineRenderers::Vulkan::Renderer::DeinitGraphicsPipeline(VkPipeline& pipeline, const Render::Device& device)
+void EngineRenderers::Vulkan::Renderer::DeinitGraphicsPipeline(VkPipeline& pipeline, const EngineRenderers::Vulkan::Device& device)
 {
 	if (pipeline != VK_NULL_HANDLE)
 	{
@@ -707,7 +707,7 @@ void EngineRenderers::Vulkan::Renderer::DeinitGraphicsPipeline(VkPipeline& pipel
 	}
 }
 
-VkDescriptorSetLayout EngineRenderers::Vulkan::Renderer::InitDescriptorSetLayout(const Render::Device& device, const std::vector<VkDescriptorSetLayoutBinding>& binding)
+VkDescriptorSetLayout EngineRenderers::Vulkan::Renderer::InitDescriptorSetLayout(const EngineRenderers::Vulkan::Device& device, const std::vector<VkDescriptorSetLayoutBinding>& binding)
 {
 	VkDescriptorSetLayout layout = VK_NULL_HANDLE;
 
@@ -723,7 +723,7 @@ VkDescriptorSetLayout EngineRenderers::Vulkan::Renderer::InitDescriptorSetLayout
 	return layout;
 }
 
-void EngineRenderers::Vulkan::Renderer::DeinitDescriptorSetLayout(VkDescriptorSetLayout& layout, const Render::Device& device)
+void EngineRenderers::Vulkan::Renderer::DeinitDescriptorSetLayout(VkDescriptorSetLayout& layout, const EngineRenderers::Vulkan::Device& device)
 {
 	if (layout != VK_NULL_HANDLE)
 	{
@@ -734,7 +734,7 @@ void EngineRenderers::Vulkan::Renderer::DeinitDescriptorSetLayout(VkDescriptorSe
 	}
 }
 
-VkDescriptorPool EngineRenderers::Vulkan::Renderer::InitDescriptorPool(const Render::Device& device, const std::vector<VkDescriptorPoolSize> descriptorPoolSizes)
+VkDescriptorPool EngineRenderers::Vulkan::Renderer::InitDescriptorPool(const EngineRenderers::Vulkan::Device& device, const std::vector<VkDescriptorPoolSize> descriptorPoolSizes)
 {
 	VkDescriptorPool descriptorPool = VK_NULL_HANDLE;
 
@@ -752,7 +752,7 @@ VkDescriptorPool EngineRenderers::Vulkan::Renderer::InitDescriptorPool(const Ren
 	return descriptorPool;
 }
 
-void EngineRenderers::Vulkan::Renderer::DeinitDescriptorPool(VkDescriptorPool& descriptorPool, const Render::Device& device)
+void EngineRenderers::Vulkan::Renderer::DeinitDescriptorPool(VkDescriptorPool& descriptorPool, const EngineRenderers::Vulkan::Device& device)
 {
 	if (descriptorPool != VK_NULL_HANDLE)
 	{
@@ -764,10 +764,10 @@ void EngineRenderers::Vulkan::Renderer::DeinitDescriptorPool(VkDescriptorPool& d
 }
 
 VkDescriptorSet EngineRenderers::Vulkan::Renderer::InitDescriptorSet(
-	const Render::Device& device, 
+	const EngineRenderers::Vulkan::Device& device,
 	const VkDescriptorPool& descriptorPool, 
 	const std::vector<VkDescriptorSetLayout>& descriptorSetLayouts, 
-	const std::vector<Render::UniformBuffer*>& buffers
+	const std::vector<EngineRenderers::Vulkan::UniformBuffer*>& buffers
 )
 {
 	VkDescriptorSet descriptorSet = VK_NULL_HANDLE;
@@ -803,7 +803,7 @@ VkDescriptorSet EngineRenderers::Vulkan::Renderer::InitDescriptorSet(
 	return descriptorSet;
 }
 
-void EngineRenderers::Vulkan::Renderer::DeinitDescriptorSet(VkDescriptorSet& descriptorSet, const VkDescriptorPool& descriptorPool, const Render::Device& device)
+void EngineRenderers::Vulkan::Renderer::DeinitDescriptorSet(VkDescriptorSet& descriptorSet, const VkDescriptorPool& descriptorPool, const EngineRenderers::Vulkan::Device& device)
 {
 	if (descriptorSet != VK_NULL_HANDLE)
 	{
@@ -815,7 +815,7 @@ void EngineRenderers::Vulkan::Renderer::DeinitDescriptorSet(VkDescriptorSet& des
 }
 
 VkRenderPass EngineRenderers::Vulkan::Renderer::InitRenderPass(
-	const Render::Device& device,
+	const EngineRenderers::Vulkan::Device& device,
 	const VkSurfaceKHR& surface,
 	const VkFormat& colorAttachmentFormat,
 	const VkFormat& depthStencilFormat)
@@ -898,7 +898,7 @@ VkRenderPass EngineRenderers::Vulkan::Renderer::InitRenderPass(
 	return renderPass;
 }
 
-void EngineRenderers::Vulkan::Renderer::DeinitRenderPass(VkRenderPass& renderPass, const Render::Device& device)
+void EngineRenderers::Vulkan::Renderer::DeinitRenderPass(VkRenderPass& renderPass, const EngineRenderers::Vulkan::Device& device)
 {
 	if (renderPass != VK_NULL_HANDLE)
 	{

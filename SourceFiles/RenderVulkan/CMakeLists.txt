@@ -68,13 +68,16 @@ target_include_directories(${PROJECT_NAME} PRIVATE
 	${ENGINE_ROOT}/SourceFiles/SDK/glm/Include
 	${ENGINE_ROOT}/SourceFiles/SDK/stb/Include
 	${ENGINE_ROOT}/SourceFiles/SDK/boost/Include
+	${ENGINE_ROOT}/SourceFiles/SDK/assimp/Include
 )
 
 if(("${CMAKE_GENERATOR_PLATFORM}" STREQUAL "x64"))
     target_link_directories(${PROJECT_NAME} PRIVATE ${ENGINE_ROOT}/SourceFiles/SDK/vulkan/Lib)
     target_link_directories(${PROJECT_NAME} PRIVATE ${ENGINE_ROOT}/SourceFiles/SDK/boost/Lib)
+    target_link_directories(${PROJECT_NAME} PRIVATE ${ENGINE_ROOT}/SourceFiles/SDK/assimp/Lib)
 elseif (("${CMAKE_GENERATOR_PLATFORM}" STREQUAL "x32"))
 	target_link_directories(${PROJECT_NAME} PRIVATE ${ENGINE_ROOT}/SourceFiles/SDK/vulkan/Lib32)
+	target_link_directories(${PROJECT_NAME} PRIVATE ${ENGINE_ROOT}/SourceFiles/SDK/assimp/Lib32)
 endif()
 
 target_include_directories(${PROJECT_NAME} PRIVATE ${CMAKE_SOURCE_DIR}/SourceFiles/Common)

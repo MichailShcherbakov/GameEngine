@@ -35,11 +35,11 @@ private:
 	VkSemaphore m_readyToPresent = VK_NULL_HANDLE;
 	VkFence m_fence = VK_NULL_HANDLE;
 	VkDescriptorSet m_descriptorSet = VK_NULL_HANDLE;
-	Render::Buffer* m_vertexBuffer;
-	Render::UniformBuffer* m_colorUniformBuffer;
+	EngineRenderers::Vulkan::Buffer* m_vertexBuffer;
+	EngineRenderers::Vulkan::UniformBuffer* m_colorUniformBuffer;
 	VkDebugUtilsMessengerEXT m_debugUtilsMessenger = VK_NULL_HANDLE;
-	Render::Device m_device;
-	Render::Swapchain m_swapchain;
+	EngineRenderers::Vulkan::Device m_device;
+	EngineRenderers::Vulkan::Swapchain m_swapchain;
 	std::vector<VkCommandBuffer> m_buffers;
 };
 

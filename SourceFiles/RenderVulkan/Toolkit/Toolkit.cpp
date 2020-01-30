@@ -3,7 +3,7 @@
 
 #include <fstream>
 
-bool Render::CheckRequestedInstanceLayersValidation(const std::vector<const char*>& requestedLayers)
+bool EngineRenderers::Vulkan::CheckRequestedInstanceLayersValidation(const std::vector<const char*>& requestedLayers)
 {
 	uint32_t numberLayerProperties = 0;
 	std::vector<VkLayerProperties> properties;
@@ -32,7 +32,7 @@ bool Render::CheckRequestedInstanceLayersValidation(const std::vector<const char
 	return false;
 }
 
-bool Render::CheckRequestedInstanceExtensions(const std::vector<const char*>& requestedExtensions)
+bool EngineRenderers::Vulkan::CheckRequestedInstanceExtensions(const std::vector<const char*>& requestedExtensions)
 {
 	uint32_t numberExtensions = 0;
 	std::vector<VkExtensionProperties> extensions;
@@ -61,7 +61,7 @@ bool Render::CheckRequestedInstanceExtensions(const std::vector<const char*>& re
 	return false;
 }
 
-bool Render::CheckRequestedDeviceLayersValidation(const VkPhysicalDevice& device, const std::vector<const char*>& requestedLayers)
+bool EngineRenderers::Vulkan::CheckRequestedDeviceLayersValidation(const VkPhysicalDevice& device, const std::vector<const char*>& requestedLayers)
 {
 	uint32_t numberLayerProperties = 0;
 	std::vector<VkLayerProperties> properties;
@@ -90,7 +90,7 @@ bool Render::CheckRequestedDeviceLayersValidation(const VkPhysicalDevice& device
 	return false;
 }
 
-bool Render::CheckRequestedDeviceExtensions(const VkPhysicalDevice& device, const std::vector<const char*>& requestedExtensions)
+bool EngineRenderers::Vulkan::CheckRequestedDeviceExtensions(const VkPhysicalDevice& device, const std::vector<const char*>& requestedExtensions)
 {
 	uint32_t numberExtensions = 0;
 	std::vector<VkExtensionProperties> extensions;
@@ -119,9 +119,9 @@ bool Render::CheckRequestedDeviceExtensions(const VkPhysicalDevice& device, cons
 	return false;
 }
 
-Render::QueueFamilyInfo Render::GetQueueFamilyInfo(const VkPhysicalDevice& physicalDevice, const VkSurfaceKHR& surface, bool uniqueStrict)
+EngineRenderers::Vulkan::QueueFamilyInfo EngineRenderers::Vulkan::GetQueueFamilyInfo(const VkPhysicalDevice& physicalDevice, const VkSurfaceKHR& surface, bool uniqueStrict)
 {
-	Render::QueueFamilyInfo queueFamilyInfo;
+	EngineRenderers::Vulkan::QueueFamilyInfo queueFamilyInfo;
 
 	uint32_t numberQueueFamilyProperties = 0;
 	std::vector<VkQueueFamilyProperties> queueFamilyProperties;
@@ -161,9 +161,9 @@ Render::QueueFamilyInfo Render::GetQueueFamilyInfo(const VkPhysicalDevice& physi
 	return queueFamilyInfo;
 }
 
-Render::SurfaceInfo Render::GetSurfaceInfo(const VkPhysicalDevice& physicalDevice, const VkSurfaceKHR& surface)
+EngineRenderers::Vulkan::SurfaceInfo EngineRenderers::Vulkan::GetSurfaceInfo(const VkPhysicalDevice& physicalDevice, const VkSurfaceKHR& surface)
 {
-	Render::SurfaceInfo surfaceInfo;
+	EngineRenderers::Vulkan::SurfaceInfo surfaceInfo;
 
 	VkSurfaceCapabilitiesKHR surfaceCapabilities;
 	vkGetPhysicalDeviceSurfaceCapabilitiesKHR(physicalDevice, surface, &surfaceCapabilities);
@@ -196,7 +196,7 @@ Render::SurfaceInfo Render::GetSurfaceInfo(const VkPhysicalDevice& physicalDevic
 	return surfaceInfo;
 }
 
-VkShaderModule Render::LoadShader(const std::string path, const VkDevice& device)
+VkShaderModule EngineRenderers::Vulkan::LoadShader(const std::string path, const VkDevice& device)
 {
 	VkShaderModule shaderModule = VK_NULL_HANDLE;
 
@@ -230,7 +230,7 @@ VkShaderModule Render::LoadShader(const std::string path, const VkDevice& device
 }
 
 
-VKAPI_ATTR VkBool32 VKAPI_CALL Render::DebugUtilsMessengerCallback(VkDebugUtilsMessageSeverityFlagBitsEXT messageSeverity, VkDebugUtilsMessageTypeFlagsEXT messageType, const VkDebugUtilsMessengerCallbackDataEXT* pCallbackData, void* pUserData)
+VKAPI_ATTR VkBool32 VKAPI_CALL EngineRenderers::Vulkan::DebugUtilsMessengerCallback(VkDebugUtilsMessageSeverityFlagBitsEXT messageSeverity, VkDebugUtilsMessageTypeFlagsEXT messageType, const VkDebugUtilsMessengerCallbackDataEXT* pCallbackData, void* pUserData)
 {
 	std::cout << pCallbackData->pMessage << std::endl;
 	return VK_FALSE;

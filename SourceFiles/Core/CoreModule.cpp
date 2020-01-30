@@ -3,6 +3,7 @@
 
 #include "LogSystem/LogSystem.h"
 #include "Console/Console.h"
+#include "MeshLoaders/AssimpLoader/AssimpLoader.h"
 
 #include <vector>
 #include <boost/filesystem.hpp>
@@ -26,6 +27,8 @@ void CoreModule::Initialize()
 
 	m_console = new Console();
 	m_console->Initialize();
+
+	m_meshLoader = new AssimpLoader();
 
 	_Log("Initializing Engine...");
 
@@ -105,6 +108,11 @@ void CoreModule::LoadEngineModules(const IInitializeParams& params)
 void CoreModule::EngineEvent(const EEngineEvent& event)
 {
 	emit m_OnEngineEvent(event);
+}
+
+ILoader* CoreModule::GetMeshLoader()
+{
+	return m_meshLoader;
 }
 
 void CoreModule::ReleaseLoadedEngineModules()

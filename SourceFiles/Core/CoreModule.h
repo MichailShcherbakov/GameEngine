@@ -47,6 +47,7 @@ public:
 	virtual std::string GetRootDir() override;
 	virtual void LoadEngineModules(const IInitializeParams& params) override;
 	virtual void EngineEvent(const EEngineEvent& event) override;
+	virtual ILoader* GetMeshLoader() override;
 	// ~IUnknownModule
 
 public:
@@ -55,6 +56,7 @@ public:
 private:
 	Modules m_modules;
 	IConsole* m_console;
+	ILoader* m_meshLoader;
 	IInitializeParams m_pInitializeParams;
 
 private:
